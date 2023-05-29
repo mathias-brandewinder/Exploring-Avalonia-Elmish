@@ -69,6 +69,16 @@ module Chart =
             Cmd.none
 
     let view (state: State) (dispatch: Msg -> unit)=
-        PlotView.create [
-            PlotView.model (state.Series |> createPlotModel)
+        DockPanel.create [
+            DockPanel.lastChildFill true
+            DockPanel.children [
+                Button.create [
+                    Button.dock Dock.Bottom
+                    Button.content "Generate New Chart"
+                    Button.onClick (fun _ -> CreateNewSeries |> dispatch)
+                    ]
+                PlotView.create [
+                    PlotView.model (state.Series |> createPlotModel)
+                    ]
+                ]
             ]
