@@ -17,5 +17,6 @@
     <PackageReference Include="JaggerJo.Avalonia.FuncUI" Version="0.5.0" />
     <PackageReference Include="JaggerJo.Avalonia.FuncUI.DSL" Version="0.5.0" />
     <PackageReference Include="JaggerJo.Avalonia.FuncUI.Elmish" Version="0.5.0" />
+    <PackageReference Include="OxyPlot.Avalonia" Version="2.1.0" />
   </ItemGroup>
 </Project>

@@ -16,18 +16,26 @@ module Shell =
     open Avalonia.FuncUI.Hosts
     open Avalonia.FuncUI.Elmish
 
-    type State =
-        /// store the child state in your main state
-        { aboutState: About.State; counterState: Counter.State;}
+    type State = {
+        aboutState: About.State
+        counterState: Counter.State
+        chartState: Chart.State
+        }
 
     type Msg =
         | AboutMsg of About.Msg
         | CounterMsg of Counter.Msg
+        | ChartMsg of Chart.Msg
 
     let init =
         let aboutState, aboutCmd = About.init
         let counterState = Counter.init
-        { aboutState = aboutState; counterState = counterState },
+        let chartState = Chart.init ()
+        {
+            aboutState = aboutState
+            counterState = counterState
+            chartState = chartState
+        },
         /// If your children controls don't emit any commands
         /// in the init function, you can just return Cmd.none
         /// otherwise, you can use a batch operation on all of them
@@ -40,29 +48,42 @@ module Shell =
             let aboutState, cmd =
                 About.update bpmsg state.aboutState
             { state with aboutState = aboutState },
-            /// map the message to the kind of message 
+            /// map the message to the kind of message
             /// your child control needs to handle
             Cmd.map AboutMsg cmd
         | CounterMsg countermsg ->
             let counterMsg =
                 Counter.update countermsg state.counterState
             { state with counterState = counterMsg },
-            /// map the message to the kind of message 
+            /// map the message to the kind of message
             /// your child control needs to handle
+            Cmd.none
+        | ChartMsg chartMsg ->
+            let updatedState, _ = Chart.update chartMsg state.chartState
+            { state with chartState = updatedState },
             Cmd.none
 
     let view (state: State) (dispatch) =
-        DockPanel.create
-            [ DockPanel.children
-                [ TabControl.create
-                    [ TabControl.tabStripPlacement Dock.Top
-                      TabControl.viewItems
-                          [ TabItem.create
-                                [ TabItem.header "Counter Sample"
-                                  TabItem.content (Counter.view state.counterState (CounterMsg >> dispatch)) ]
-                            TabItem.create
-                                [ TabItem.header "About"
-                                  TabItem.content (About.view state.aboutState (AboutMsg >> dispatch)) ] ] ] ] ]
+        DockPanel.create [
+            DockPanel.children [
+                TabControl.create [
+                    TabControl.tabStripPlacement Dock.Top
+                    TabControl.viewItems [
+                        TabItem.create [
+                            TabItem.header "Counter Sample"
+                            TabItem.content (Counter.view state.counterState (CounterMsg >> dispatch)) ]
+                        TabItem.create [
+                            TabItem.header "About"
+                            TabItem.content (About.view state.aboutState (AboutMsg >> dispatch))
+                            ]
+                        TabItem.create [
+                            TabItem.header "Charts"
+                            TabItem.content (Chart.view state.chartState (ChartMsg >> dispatch))
+                            ]
+                        ]
+                    ]
+                ]
+            ]
 
     /// This is the main window of your application
     /// you can do all sort of useful things here like setting heights and widths
